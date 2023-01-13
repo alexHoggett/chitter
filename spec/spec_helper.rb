@@ -13,10 +13,38 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+
+# very important line to say that tests are run in "test" environment
+ENV["RACK_ENV"] = "test"
+# imports the actual controller file
+require_relative "../app"
+require 'database_cleaner/active_record'
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
+  # clearing out the test db before each test
+
+  # config.before(:each) do
+  #   ActiveRecord::Base.subclasses.each(&:delete_all)
+  # end
+
+  config.before(:suite) do # <-- before entire test run
+    DatabaseCleaner.strategy = :transaction
+    # DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.start
+  end
+
+  # config.before(:each) do # <-- create a "save point" before each test
+  #   DatabaseCleaner.start
+  # end
+
+  config.after(:each) do # <-- after each individual test roll back to "save point"
+    DatabaseCleaner.clean
+  end
+
   config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`
     # and `failure_message` of custom matchers include text for helper methods
