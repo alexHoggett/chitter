@@ -32,15 +32,35 @@ describe Chitter do
     end
   end
 
-  conext "GET to /register" do
+  context "GET to /register" do
     it "returns the register page, with a form to input data" do
+      response = get('/register')
       expect(response.status).to eq 200
       expect(response.body).to include('<form action="/register" method="POST">')
       expect(response.body).to include('<input type="hidden" name="password">')
       expect(response.body).to include('<input type="text" name="name">')
       expect(response.body).to include('<input type="text" name="email">')
+    end
+  end
 
+  context "POST to /register" do
+    it "adds a new user to the database" do
+
+      # test_user = Hash.new
+      # test_user[username] = 'tester1'
+      # test_user[name] = 'Testy Mctester', 
+      # test_user[email] = 'tester@gmail.com',
+      # test_user[password] = 'password'
+
+      response = post(
+        '/register', 
+        username: 'tester1', 
+        name: 'Testy Mctester', 
+        email: 'tester@gmail.com',
+        password: 'password'
+      )
       
+      expect(User.where("username = 'tester1'").blank?).to eq false
 
     end
   end
