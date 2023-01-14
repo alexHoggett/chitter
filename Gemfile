@@ -22,3 +22,5 @@ gem "faker", "~> 3.1"
 gem "bcrypt", "~> 3.1"
 
 gem "database_cleaner-active_record", "~> 2.0"
+
+gem "sinatra-flash", "~> 0.3.0"

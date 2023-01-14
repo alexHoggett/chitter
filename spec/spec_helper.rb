@@ -25,23 +25,27 @@ RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
-  # clearing out the test db before each test
 
+  # clearing out the test db before each test
   # config.before(:each) do
   #   ActiveRecord::Base.subclasses.each(&:delete_all)
   # end
 
-  config.before(:suite) do # <-- before entire test run
+  config.before(:suite) do
+    DatabaseCleaner[:active_record].strategy = :transaction
+    DatabaseCleaner.clean_with :truncation, {:only => %w{users peeps} } 
+  end
+
+  config.before(:each) do
     DatabaseCleaner.strategy = :transaction
-    # DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each, :database) do
+    # open transaction
     DatabaseCleaner.start
   end
 
-  # config.before(:each) do # <-- create a "save point" before each test
-  #   DatabaseCleaner.start
-  # end
-
-  config.after(:each) do # <-- after each individual test roll back to "save point"
+  config.after(:each, :database) do
     DatabaseCleaner.clean
   end
 

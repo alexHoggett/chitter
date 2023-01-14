@@ -10,9 +10,21 @@
   <h1>Chitter</h1>
 
   <a href="/register">Register</a>
-  <a href="/login">Login</a>
+  <% if !logged_in? %><a href="/login">Login</a><% end %>
 
   <%# If Logged in then give the option to write a peep %>
+
+  <% if logged_in? %>
+    <div class="welcome-message">Logged in as <%= @username %></div>
+    <a href="/logout">Logout</a>
+
+    <div data-alert><%= flash[:failed_peep] %></div>
+    <form action="/add_peep" method="POST">
+      <label for="content">Peep: </label><input type="text" name="content">
+      <input type="submit" value="Add Peep">
+    </form>
+  <% end %>
+
 
   <h2>Peeps:</h2>
 

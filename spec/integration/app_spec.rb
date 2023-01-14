@@ -14,10 +14,6 @@ describe Chitter do
       response = get('/')
       expect(response.status).to eq 200
       expect(response.body).to include('<h1>Chitter</h1>')
-      peeps = Peep.all
-      expect(response.body).to include(peeps[0].content)
-      expect(response.body).to include(peeps[1].content)
-      expect(response.body).to include(peeps[2].content)
     end
   end
 
@@ -37,7 +33,7 @@ describe Chitter do
       response = get('/register')
       expect(response.status).to eq 200
       expect(response.body).to include('<form action="/register" method="POST">')
-      expect(response.body).to include('<input type="hidden" name="password">')
+      expect(response.body).to include('<input type="password" name="password">')
       expect(response.body).to include('<input type="text" name="name">')
       expect(response.body).to include('<input type="text" name="email">')
     end
@@ -59,9 +55,34 @@ describe Chitter do
         email: 'tester@gmail.com',
         password: 'password'
       )
-      
       expect(User.where("username = 'tester1'").blank?).to eq false
+    end
+  end
 
+  context "POST to /login" do
+    it "will login a user with the correct credentials" do
+      response = post(
+        '/login',
+        username: 'tester1',
+        password: 'password'
+      )
+
+      expect(response.status).to eq 200
+      response = get('/')
+      expect(response.body).to include('Logged in as tester1')
+    end
+  end
+
+  context "POST to /peeps" do
+    it "adds a peep to the db and displays it on the index page" do
+      peep_content = "This is a test peep"
+      response = post(
+        '/add_peep',
+        content: peep_content
+      )
+      expect(Peep.where("content = '#{peep_content}'").blank?).to eq false
+      response = get('/')
+      expect(response.body).to include(peep_content)
     end
   end
 
